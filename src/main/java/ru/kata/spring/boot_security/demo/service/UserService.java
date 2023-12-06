@@ -1,16 +1,23 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -20,15 +27,33 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username_from_webpage) throws UsernameNotFoundException {
+        User user_from_DB = userRepository.getUserByUsername(username_from_webpage);
+        if (user_from_DB == null) {
+            throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
+        }
+//        return user_from_DB;
+        return new org.springframework.security.core.userdetails.User(
+                user_from_DB.getUsername(),
+                user_from_DB.getPassword(),
+                mapRolesToAuthorities(user_from_DB.getRole()));
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList());
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
     public User getUserByUsername(String username) {
-        if (userRepository.findByUsername(username).isEmpty()) {
+        if (userRepository.getUserByUsername(username) == null) {
             throw new UsernameNotFoundException("Пользователь с таким именем не найден");
         }
-        return userRepository.findByUsername(username).get();
+        return userRepository.getUserByUsername(username);
     }
 
     public User getUserById(Long id) {
@@ -63,6 +88,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public boolean deleteUserById(Long id) {
         if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
