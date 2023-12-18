@@ -1,4 +1,4 @@
-const URLTableUsers = 'http://localhost:8080/api/admin/users/';
+const URLTableUsers = 'http://localhost:8080/api/admin/users';
 
 getAllUsers();
 
@@ -20,8 +20,8 @@ function getAllUsers() {
                 dataOfUsers += `<tr>
                         <td>${user.id}</td>
                         <td>${user.username}</td>
-                        <td>${user.firstname}</td>
-                        <td>${user.lastname}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
                         <td>${user.email}</td>
                         <td>${rolesString}</td>
 
@@ -55,7 +55,7 @@ function getAllUsers() {
 function rolesToString(roles) {
     let rolesString = '';
     for (const element of roles) {
-        rolesString += (element.name.toString().replace('ROLE_', '') + ', ');
+        rolesString += (element.role.toString().replace('ROLE_', '') + ', ');
     }
     rolesString = rolesString.substring(0, rolesString.length - 2); // -2, чтобы не показывать последнюю запятую с пробелом
     return rolesString;

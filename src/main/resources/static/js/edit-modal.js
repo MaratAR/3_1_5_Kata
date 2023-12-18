@@ -29,8 +29,8 @@ function editUser() {
             body: JSON.stringify({
                 id: formEdit.id.value,
                 username: formEdit.username.value,
-                firstname: formEdit.firstname.value,
-                lastname: formEdit.lastname.value,
+                firstName: formEdit.firstName.value,
+                lastName: formEdit.lastName.value,
                 email: formEdit.email.value,
                 password: formEdit.password.value,
                 roles: rolesForEdit
@@ -53,7 +53,7 @@ function loadRolesForEdit() {
             data.forEach(role => {
                 let option = document.createElement("option");
                 option.value = role.id;
-                option.text = role.name.toString().replace('ROLE_', '');
+                option.text = role.role.toString().replace('ROLE_', '');
                 selectEdit.appendChild(option);
             });
         })

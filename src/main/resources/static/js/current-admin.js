@@ -1,4 +1,4 @@
-const URLNavbarAdmin = 'http://localhost:8080/api/admin/showAccount/';
+const URLNavbarAdmin = 'http://localhost:8080/api/admin/showAccount';
 const navbarBrandAdmin = document.getElementById('navbarBrandAdmin');//Элемент, где будет роль и почта текущего юзера
 const tableUserAdmin = document.getElementById('tableAdmin');//Элемент, где будет таблица текущего юзера
 
@@ -13,8 +13,8 @@ function getCurrentAdmin() {
             data += `<tr>
             <td>${userAdmin.id}</td>
             <td>${userAdmin.username}</td>
-            <td>${userAdmin.firstname}</td>
-            <td>${userAdmin.lastname}</td>
+            <td>${userAdmin.firstName}</td>
+            <td>${userAdmin.lastName}</td>
             <td>${userAdmin.email}</td>
             <td>${rolesStringAdmin}</td>
             </tr>`;
@@ -31,7 +31,7 @@ function rolesToStringForAdmin(roles) {
     let rolesString = '';
 
     for (const element of roles) {
-        rolesString += (element.name.toString().replace('ROLE_', '') + ', ');
+        rolesString += (element.role.toString().replace('ROLE_', '') + ', ');
     }
     rolesString = rolesString.substring(0, rolesString.length - 2);
     return rolesString;

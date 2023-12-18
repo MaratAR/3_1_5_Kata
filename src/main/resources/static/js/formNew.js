@@ -16,15 +16,15 @@ function createNewUser() {
                 });
         }
 
-        fetch("http://localhost:8080/api/admin/users/", {
+        fetch("http://localhost:8080/api/admin/users", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 username: formNew.username.value,
-                firstname: formNew.firstname.value,
-                lastname: formNew.lastname.value,
+                firstName: formNew.firstName.value,
+                lastName: formNew.lastName.value,
                 email: formNew.email.value,
                 password: formNew.password.value,
                 roles: rolesForNewUser
@@ -50,7 +50,7 @@ function loadRolesForNewUser() {
             data.forEach(role => {
                 let option = document.createElement("option");
                 option.value = role.id;
-                option.text = role.name.toString().replace('ROLE_', '');
+                option.text = role.role.toString().replace('ROLE_', '');
                 selectAdd.appendChild(option);
             });
         })

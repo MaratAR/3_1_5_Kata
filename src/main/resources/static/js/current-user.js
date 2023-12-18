@@ -1,4 +1,4 @@
-const URLNavbarUser = 'http://localhost:8080/api/user/showAccount/';
+const URLNavbarUser = 'http://localhost:8080/api/user/showAccount';
 const navbarBrandUser = document.getElementById('navbarBrandUser'); //Элемент, где будет роль и почта текущего юзера
 const tableUserUser = document.getElementById('tableUser');//Элемент, где будет таблица текущего юзера
 
@@ -13,8 +13,8 @@ function getCurrentUser() {
             dataOfUser += `<tr>
             <td>${user.id}</td>
             <td>${user.username}</td>
-            <td>${user.firstname}</td>
-            <td>${user.lastname}</td>
+            <td>${user.firstName}</td>
+            <td>${user.lastName}</td>
             <td>${user.email}</td>
             <td>${rolesStringUser}</td>
             </tr>`;
@@ -30,7 +30,7 @@ getCurrentUser()
 function rolesToStringForUser(roles) {
     let rolesString = '';
     for (let element of roles) {
-        rolesString += (element.name.toString().replace('ROLE_', '') + ', ');
+        rolesString += (element.role.toString().replace('ROLE_', '') + ', ');
     }
     rolesString = rolesString.substring(0, rolesString.length - 2);
     return rolesString;

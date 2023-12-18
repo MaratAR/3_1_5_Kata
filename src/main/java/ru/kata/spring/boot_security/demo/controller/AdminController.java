@@ -4,10 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -18,7 +14,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/admin")
 public class AdminController {
 
@@ -46,49 +42,42 @@ public class AdminController {
 
     @GetMapping("/roles/{id}")
     public ResponseEntity<Collection<Role>> getRole(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(userService.getUserById(id).getRoles(), HttpStatus.OK);
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user.getRoles(), HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
-//        if (user == null) {
-//            throw new NoSuchUserException("Пользователя с ID = " + id + " нет в БД");
-//        }
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> addNewUser(@RequestBody @Valid User newUser, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            StringBuilder info_about_errors = new StringBuilder(); //Создали строку, в которую поместим ошибки
-//            List<FieldError> fields_of_errors = bindingResult.getFieldErrors(); //Получили список из полей, где произошли ошибки
-//
-//            for (FieldError error : fields_of_errors) { //Прошлись по ошибкам
-//                info_about_errors.append(error.getField()) // в строку добавили само поле
-//                        .append(" - ")
-//                        .append(error.getDefaultMessage()) //добавили сообщение ошибки
-//                        .append(";");
-//            }
-//
-//            throw new UserNotCreatedException(info_about_errors.toString());
-//        }
+    public ResponseEntity<User> addNewUser(@RequestBody User newUser) {
         userService.addUser(newUser);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
     }
 
     @PatchMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@RequestBody User userFromWebPage, @PathVariable("id") Long id) {
+        if (userService.getUserById(id) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         userService.editUser(userFromWebPage);
         return new ResponseEntity<>(userFromWebPage, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
-        User user = userService.getUserById(id);
-//        if (user == null) {
-//            throw new NoSuchUserException("Пользователь с id = " + id + " не найден в БД и не может быть удален");
-//        }
+        if (userService.getUserById(id) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

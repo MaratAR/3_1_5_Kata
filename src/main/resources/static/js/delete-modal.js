@@ -33,7 +33,7 @@ function loadRolesForDelete() {
             data.forEach(role => {
                 let option = document.createElement("option");
                 option.value = role.id;
-                option.text = role.name.toString().replace('ROLE_', '');
+                option.text = role.role.toString().replace('ROLE_', '');
                 selectDelete.appendChild(option);
             });
         })

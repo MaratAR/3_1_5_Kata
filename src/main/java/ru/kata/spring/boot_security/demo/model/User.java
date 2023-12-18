@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)

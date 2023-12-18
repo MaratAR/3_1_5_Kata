@@ -18,7 +18,7 @@ public class WebSecurityConfig {
     private final SuccessUserHandler successUserHandler;
     private final UserDetailsService userDetailsService;
 
-    public WebSecurityConfig(@Lazy SuccessUserHandler successUserHandler, @Lazy UserDetailsService userDetailsService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, @Lazy UserDetailsService userDetailsService) {
         this.successUserHandler = successUserHandler;
         this.userDetailsService = userDetailsService;
     }
@@ -26,17 +26,17 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .formLogin(formLogin -> formLogin
-                        .successHandler(successUserHandler)
-                        .permitAll())
-                .logout(logout -> logout.permitAll())
-//                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/index", "/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
+                .formLogin(formLogin -> formLogin
+                        .successHandler(successUserHandler)
+                        .permitAll())
+                .logout(logout -> logout.permitAll())
                 .build();
     }
 
