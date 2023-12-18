@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username_from_webpage) throws UsernameNotFoundException {
-        User user_from_DB = userRepository.getUserByUsername(username_from_webpage);
+        User user_from_DB = userRepository.getUserByUsername(username_from_webpage).get();
         if (user_from_DB == null) {
             throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
         }
@@ -38,7 +38,7 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user_from_DB.getUsername(),
                 user_from_DB.getPassword(),
-                mapRolesToAuthorities(user_from_DB.getRole()));
+                mapRolesToAuthorities(user_from_DB.getRoles()));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
@@ -50,10 +50,10 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserByUsername(String username) {
-        if (userRepository.getUserByUsername(username) == null) {
+        if (userRepository.getUserByUsername(username).isEmpty()) {
             throw new UsernameNotFoundException("Пользователь с таким именем не найден");
         }
-        return userRepository.getUserByUsername(username);
+        return userRepository.getUserByUsername(username).get();
     }
 
     public User getUserById(Long id) {
@@ -64,22 +64,9 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void editUser(User updateUser, Long id) {
-        User user_from_DB = userRepository.findById(id).get();
-        user_from_DB.setUsername(updateUser.getUsername());
-        user_from_DB.setFirstName(updateUser.getFirstName());
-        user_from_DB.setLastName(updateUser.getLastName());
-        user_from_DB.setEmail(updateUser.getEmail());
-        user_from_DB.setRole(updateUser.getRole());
-
-        if (user_from_DB.getPassword().equals(updateUser.getPassword())) {
-            userRepository.save(user_from_DB);
-        } else {
-            user_from_DB.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-            userRepository.save(user_from_DB);
-        }
-
-        userRepository.save(user_from_DB);
+    public void editUser(User updatedUser) {
+        updatedUser.setPassword(passwordEncoder.encode(getUserById(updatedUser.getId()).getPassword()));
+        userRepository.save(updatedUser);
     }
 
     @Transactional

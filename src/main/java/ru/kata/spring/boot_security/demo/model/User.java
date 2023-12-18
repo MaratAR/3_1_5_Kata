@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 @Entity
-@Table(name = "users_security")
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +32,18 @@ public class User implements UserDetails {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> role = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String username, String password, String firstName, String lastName, String email, List<Role> role) {
+    public User(String username, String password, String firstName, String lastName, String email, List<Role> roles) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.role = role;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -94,17 +94,17 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public List<Role> getRole() {
-        return role;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(List<Role> role) {
-        this.role = role;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRole();
+        return getRoles();
     }
 
     @Override
@@ -125,5 +125,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username.equals(user.username) && lastName.equals(user.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, lastName);
     }
 }
