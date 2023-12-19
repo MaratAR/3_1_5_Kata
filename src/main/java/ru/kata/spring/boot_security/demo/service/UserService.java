@@ -31,9 +31,9 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username_from_webpage) throws UsernameNotFoundException {
         User user_from_DB = userRepository.getUserByUsername(username_from_webpage).get();
-        if (user_from_DB == null) {
-            throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
-        }
+//        if (user_from_DB == null) {
+//            throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
+//        }
 //        return user_from_DB;
         return new org.springframework.security.core.userdetails.User(
                 user_from_DB.getUsername(),
@@ -65,7 +65,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void editUser(User updatedUser) {
-        updatedUser.setPassword(passwordEncoder.encode(getUserById(updatedUser.getId()).getPassword()));
+//        updatedUser.setPassword(passwordEncoder.encode(getUserById(updatedUser.getId()).getPassword()));
+        updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         userRepository.save(updatedUser);
     }
 
